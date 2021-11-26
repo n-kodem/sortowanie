@@ -1,10 +1,6 @@
 from tkinter import *
+from tkinter import filedialog as fd
 import time
-
-with open("inp.txt", "r+") as file1:
-    data=list(map(int,[i.replace("\n","") for i in file1.readlines()]))
-
-print(data)
 
 class Window(Frame):
 
@@ -27,16 +23,22 @@ class Window(Frame):
         numOfLoop.place(x=100,y=120,width=50)
 
     def clickStartTestBtn(self):
-        start = time.time()
-        a = 0
-        for i in range(1000):
-            a += (i**100)
-        end = time.time()
-        
-        # difference of start and end variables
-        # gives the time of execution of the
-        # program in between
-        print("The time of execution of above program is :", end-start)
+        filename = fd.askopenfilename()
+        if filename != "":
+            print(filename)
+            with open("inp.txt", "r+") as file1:
+                data=list(map(int,[i.replace("\n","") for i in file1.readlines()]))
+            print(data)
+            start = time.time()
+            a = 0
+            for i in range(1000):
+                a += (i**100)
+            end = time.time()
+            
+            # difference of start and end variables
+            # gives the time of execution of the
+            # program in between
+            print("The time of execution of above program is :", end-start)
         
 root = Tk()
 app = Window(root)
