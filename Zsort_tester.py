@@ -32,6 +32,10 @@ class Window(Frame):
         exitButton = Button(self, text="Start test", command=self.clickStartTestBtn)
         exitButton.place(x=70, y=10)
 
+        # create button, link it to clickExitButton() and place it
+        loadBtn = Button(self, text="Load data", command=self.loadTxtBtn)
+        loadBtn.place(x=10, y=10)
+
         # text with placement
         global mintime
         mintime = Label(self, text="Just do it")
@@ -48,8 +52,14 @@ class Window(Frame):
         maxtime.place(x=70,y=80)
 
         global numOfLoop
-        numOfLoop = Entry(self, show=None, font=('Arial', 9))
-        numOfLoop.place(x=100,y=120,width=50)
+        numOfLoop = Entry(self, show=None, font=('Arial', 9),text="10")
+        numOfLoop.place(x=80,y=120,width=50)
+
+        global values
+        global v
+        v = StringVar()
+        values = Entry(self, show=None, font=('Arial', 9),text = v)
+        values.place(x=20,y=120,width=50)
 
         n = StringVar()
         global typeOfSorting 
@@ -57,17 +67,22 @@ class Window(Frame):
         typeOfSorting['values'] = ("heap_sort","insertion_sort","quicksort","bubble_sort","mergesort")
         typeOfSorting.current(0)
         typeOfSorting.place(x=150,y=120)
-    def clickStartTestBtn(self):
+    
+    def loadTxtBtn(self):
         filename = fd.askopenfilename()
         if filename != "":
             print(filename)
             with open("inp.txt", "r+") as file1:
                 data=list(map(int,[i.replace("\n","") for i in file1.readlines()]))
             print(data)
-            sorts = sorttest(typeOfSorting.get(),numOfLoop.get(),data)
-            mintime.set(sorts[0])
-            avgtime.set(sorts[1])
-            maxtime.set(sorts[2])
+            v.set(" ".join(list(map(str,data))))
+    def clickStartTestBtn(self):
+
+            print(list(map(int,v.get().split())))
+            sorts = sorttest(typeOfSorting.get(),int(numOfLoop.get()),list(map(int,v.get().split())))
+            mintime.configure(text = str(sorts[0]))
+            avgtime.configure(text = str(sorts[1]))
+            maxtime.configure(text = str(sorts[2]))
             
 
         
