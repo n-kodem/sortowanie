@@ -11,11 +11,36 @@ from tkinter import ttk
 import time
 
 
+class PlaceholderEntry(ttk.Entry):
+    def __init__(self, container, placeholder, *args, **kwargs):
+        super().__init__(container, *args, **kwargs)
+        self.placeholder = placeholder
+
+        self.field_style = kwargs.pop("style", "TEntry")
+        self.placeholder_style = kwargs.pop("placeholder_style", self.field_style)
+        self["style"] = self.placeholder_style
+
+        self.insert("0", self.placeholder)
+        self.bind("<FocusIn>", self._clear_placeholder)
+        self.bind("<FocusOut>", self._add_placeholder)
+
+    def _clear_placeholder(self, e):
+        if self["style"] == self.placeholder_style and self.get() == self.placeholder:
+            self.delete("0", "end")
+            self["style"] = self.field_style
+
+    def _add_placeholder(self, e):
+        if not self.get():
+            self.insert("0", self.placeholder)
+            self["style"] = self.placeholder_style
+
+
 def sorttest(name, repeat, array):
     sort_times = []
 
     for i in range(repeat):
         start = time.perf_counter()
+        # TODO: make use of other sort types
         quicksort(array.copy())
         end = time.perf_counter()
         sort_times.append(end - start)
@@ -42,34 +67,34 @@ class Window(Frame):
 
         # text with placement
         global mintime
-        mintime = Label(self, text="Just do it")
+        mintime = Label(self, text="<Min>")
         mintime.place(x=70, y=40)
 
         # text with placement
         global avgtime
-        avgtime = Label(self, text="Just do it")
+        avgtime = Label(self, text="<Avg>")
         avgtime.place(x=70, y=60)
 
         # text with placement
         global maxtime
-        maxtime = Label(self, text="Just do it")
+        maxtime = Label(self, text="<Max>")
         maxtime.place(x=70, y=80)
 
         global numOfLoop
-        numOfLoop = Entry(self, show=None, font=('Arial', 9), text="10")
-        numOfLoop.place(x=80, y=120, width=50)
+        numOfLoop = PlaceholderEntry(self, "<Number Of Loops>", show=None, font=('Arial', 9))
+        numOfLoop.place(x=20, y=145, width=120)
 
         global values
         global v
         v = StringVar()
-        values = Entry(self, show=None, font=('Arial', 9), text=v)
-        values.place(x=20, y=120, width=50)
+        values = PlaceholderEntry(self, "<Values>", show=None, font=('Arial', 9), text=v)
+        values.place(x=20, y=120, width=120)
 
         n = StringVar()
         global typeOfSorting
         typeOfSorting = ttk.Combobox(self, width=27, textvariable=n, state="readonly")
         typeOfSorting['values'] = ("heap_sort", "insertion_sort", "quicksort", "bubble_sort", "mergesort")
-        typeOfSorting.current(0)
+        typeOfSorting.pack()
         typeOfSorting.place(x=150, y=120)
 
     def loadTxtBtn(self):
@@ -78,13 +103,13 @@ class Window(Frame):
             print(filename)
             with open("inp.txt", "r+") as file1:
                 data = list(map(int, [i.replace("\n", "") for i in file1.readlines()]))
-            print(data)
+            # print(data)
             # with open("inp.txt","w+") as f:
             #     f.write("\n".join([f'{random.randint(a=0, b=999)}' for i in range(100)]))
             v.set(" ".join(list(map(str, data))))
 
     def clickStartTestBtn(self):
-        print(list(map(int, v.get().split())))
+        # print(list(map(int, v.get().split())))
         sorts = sorttest(typeOfSorting.get(), int(numOfLoop.get()), list(map(int, v.get().split())))
         mintime.configure(text=f'Min: {sorts[0]}')
         avgtime.configure(text=f'Avg: {sorts[1]}')
@@ -93,6 +118,7 @@ class Window(Frame):
 
 root = Tk()
 app = Window(root)
-root.wm_title("Tkinter button")
-root.geometry("320x200")
+root.wm_title("Loop tester")
+root.geometry("350x200")
+typeOfSorting.current(0)
 root.mainloop()
