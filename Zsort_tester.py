@@ -1,14 +1,21 @@
 import random
 from os import read
-from heap_sort import *
-from insertion_sort import *
-from quicksort import *
-from bubble_sort import *
-from mergesort import *
+import heap_sort
+import insertion_sort
+import quick_sort
+import bubble_sort
+import merge_sort
 from tkinter import *
 from tkinter import filedialog as fd
 from tkinter import ttk
+from tkinter import messagebox
 import time
+
+sorting_list = {'heap_sort': lambda x: heap_sort.heapSort(x),
+            'insertion_sort': lambda x: insertion_sort.insertionSort(x),
+            'quick_sort': lambda x: quick_sort.quicksort(x),
+            'bubble_sort': lambda x: bubble_sort.bubbleSort(x),
+            'merge_sort': lambda x: merge_sort.mergeSort(x)}
 
 
 class PlaceholderEntry(ttk.Entry):
@@ -40,8 +47,7 @@ def sorttest(name, repeat, array):
 
     for i in range(repeat):
         start = time.perf_counter()
-        # TODO: make use of other sort types
-        quicksort(array.copy())
+        sorting_list.get(name)(array.copy())
         end = time.perf_counter()
         sort_times.append(end - start)
 
@@ -93,23 +99,21 @@ class Window(Frame):
         n = StringVar()
         global typeOfSorting
         typeOfSorting = ttk.Combobox(self, width=27, textvariable=n, state="readonly")
-        typeOfSorting['values'] = ("heap_sort", "insertion_sort", "quicksort", "bubble_sort", "mergesort")
+        typeOfSorting['values'] = list(sorting_list.keys())
         typeOfSorting.pack()
         typeOfSorting.place(x=150, y=120)
 
     def loadTxtBtn(self):
         filename = fd.askopenfilename()
         if filename != "":
-            print(filename)
-            with open("inp.txt", "r+") as file1:
-                data = list(map(int, [i.replace("\n", "") for i in file1.readlines()]))
-            # print(data)
-            # with open("inp.txt","w+") as f:
-            #     f.write("\n".join([f'{random.randint(a=0, b=999)}' for i in range(100)]))
-            v.set(" ".join(list(map(str, data))))
+            try:
+                with open(f'{filename}', "r+") as file1:
+                    data = list(map(int, [i.replace("\n", "") for i in file1.readlines()]))
+                v.set(" ".join(list(map(str, data))))
+            except ValueError:
+                messagebox.showerror(title="Error", message="Selected file contains invalid data")
 
     def clickStartTestBtn(self):
-        # print(list(map(int, v.get().split())))
         sorts = sorttest(typeOfSorting.get(), int(numOfLoop.get()), list(map(int, v.get().split())))
         mintime.configure(text=f'Min: {sorts[0]}')
         avgtime.configure(text=f'Avg: {sorts[1]}')
