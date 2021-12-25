@@ -1,21 +1,19 @@
-import random
-from os import read
+import time
+from tkinter import Tk, Frame, BOTH, Label, Button, StringVar, messagebox, ttk
+from tkinter import filedialog as fd
+
+import bubble_sort
 import heap_sort
 import insertion_sort
-import quick_sort
-import bubble_sort
 import merge_sort
-from tkinter import *
-from tkinter import filedialog as fd
-from tkinter import ttk
-from tkinter import messagebox
-import time
+import quick_sort
 
 sorting_list = {'heap_sort': lambda x: heap_sort.heapSort(x),
-            'insertion_sort': lambda x: insertion_sort.insertionSort(x),
-            'quick_sort': lambda x: quick_sort.quicksort(x),
-            'bubble_sort': lambda x: bubble_sort.bubbleSort(x),
-            'merge_sort': lambda x: merge_sort.mergeSort(x)}
+                'insertion_sort': lambda x: insertion_sort.insertionSort(x),
+                'quick_sort': lambda x: quick_sort.quicksort(x),
+                'bubble_sort': lambda x: bubble_sort.bubbleSort(x),
+                'merge_sort': lambda x: merge_sort.mergeSort(x)
+                }
 
 
 class PlaceholderEntry(ttk.Entry):
@@ -63,11 +61,11 @@ class Window(Frame):
         # widget can take all window
         self.pack(fill=BOTH, expand=1)
 
-        # create button, link it to clickExitButton() and place it
+        # Test start load btn
         exitButton = Button(self, text="Start test", command=self.clickStartTestBtn)
-        exitButton.place(x=70, y=10)
+        exitButton.place(x=80, y=10)
 
-        # create button, link it to clickExitButton() and place it
+        # Text load btn
         loadBtn = Button(self, text="Load data", command=self.loadTxtBtn)
         loadBtn.place(x=10, y=10)
 
@@ -114,10 +112,13 @@ class Window(Frame):
                 messagebox.showerror(title="Error", message="Selected file contains invalid data")
 
     def clickStartTestBtn(self):
-        sorts = sorttest(typeOfSorting.get(), int(numOfLoop.get()), list(map(int, v.get().split())))
-        mintime.configure(text=f'Min: {sorts[0]}')
-        avgtime.configure(text=f'Avg: {sorts[1]}')
-        maxtime.configure(text=f'Max: {sorts[2]}')
+        if numOfLoop.get().isdecimal() and all(ele.isdecimal() for ele in v.get().split()):
+            sorts = sorttest(typeOfSorting.get(), int(numOfLoop.get()), list(map(int, v.get().split())))
+            mintime.configure(text=f'Min: {sorts[0]}')
+            avgtime.configure(text=f'Avg: {sorts[1]}')
+            maxtime.configure(text=f'Max: {sorts[2]}')
+        else:
+            messagebox.showerror("error", "Invalid data")
 
 
 root = Tk()

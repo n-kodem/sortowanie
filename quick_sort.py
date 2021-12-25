@@ -1,6 +1,3 @@
-from warnings import warn
-
-
 def quicksort(table: list, left=0, right=None):
     if right is None: right = len(table) - 1
     i, j = left, right
@@ -16,5 +13,3 @@ def quicksort(table: list, left=0, right=None):
             j -= 1
     if left < i: quicksort(table, left, j)
     if right > i: quicksort(table, i, right)
-# print(quicksort(xd:=[1,4,5,6,9,2,63,6,9]))
-# print(xd)
